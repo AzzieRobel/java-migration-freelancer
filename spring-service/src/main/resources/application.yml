@@ -1,0 +1,34 @@
+server:
+  port: 9080
+
+spring:
+  application:
+    name: spring-textsecure-server
+
+  data:
+    cassandra:
+      contact-points: localhost
+      port: 9042
+      keyspace-name: textsecure
+      local-datacenter: datacenter1
+      schema-action: none # validate/use scripts instead of auto-creating
+
+  redis:
+    host: localhost
+    port: 6379
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+

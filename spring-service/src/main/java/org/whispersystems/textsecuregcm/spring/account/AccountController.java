@@ -41,5 +41,20 @@ public class AccountController {
     Optional<AccountDto> maybe = accountService.updateDiscoverableByPhoneNumber(id, request.discoverableByPhoneNumber());
     return maybe.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
   }
+
+  @PutMapping("/{id}/registration-lock")
+  public ResponseEntity<Void> setRegistrationLock(
+      @PathVariable("id") UUID id,
+      @RequestBody RegistrationLockRequest request) {
+
+    accountService.setRegistrationLock(id, request.registrationLock());
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{id}/registration-lock/clear")
+  public ResponseEntity<Void> clearRegistrationLock(@PathVariable("id") UUID id) {
+    accountService.clearRegistrationLock(id);
+    return ResponseEntity.noContent().build();
+  }
 }
 

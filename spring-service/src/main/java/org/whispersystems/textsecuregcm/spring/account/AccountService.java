@@ -10,5 +10,9 @@ public interface AccountService {
   Optional<AccountDto> findByPhoneNumber(String e164);
 
   Optional<AccountDto> updateDiscoverableByPhoneNumber(UUID id, boolean discoverableByPhoneNumber);
+
+  void setRegistrationLock(UUID id, String registrationLock);
+
+  void clearRegistrationLock(UUID id);
 }
 

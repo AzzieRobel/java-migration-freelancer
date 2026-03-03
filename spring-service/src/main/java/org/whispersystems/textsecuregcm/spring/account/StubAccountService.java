@@ -26,5 +26,15 @@ public class StubAccountService implements AccountService {
     // In this stub, just echo back a DTO with the requested flag set.
     return Optional.of(new AccountDto(id, "+10000000000", discoverableByPhoneNumber, Instant.EPOCH));
   }
+
+  @Override
+  public void setRegistrationLock(UUID id, String registrationLock) {
+    // Stub: no-op for now.
+  }
+
+  @Override
+  public void clearRegistrationLock(UUID id) {
+    // Stub: no-op for now.
+  }
 }
 

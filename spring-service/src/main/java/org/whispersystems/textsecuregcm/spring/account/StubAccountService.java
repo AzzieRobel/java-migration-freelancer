@@ -1,60 +1,113 @@
 package org.whispersystems.textsecuregcm.spring.account;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
-// Temporary in-memory fallback; not used when CassandraAccountService is present.
-// Remove or annotate with @Primary(false) once all callers are backed by Cassandra.
+// In-memory implementation of AccountService for development and testing.
 @Service
 public class StubAccountService implements AccountService {
 
+  private static final class InMemoryAccount {
+    private AccountDto dto;
+    private String registrationLock;
+    private String fcmRegistrationId;
+    private String apnRegistrationId;
+  }
+
+  private final Map<UUID, InMemoryAccount> accountsById = new ConcurrentHashMap<>();
+  private final Map<String, UUID> idByPhone = new ConcurrentHashMap<>();
+
+  @Override
+  public AccountDto createAccount(CreateAccountRequest request) {
+    UUID id = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+    AccountDto dto = new AccountDto(id, request.phoneNumber(), request.discoverableByPhoneNumber(), createdAt);
+
+    InMemoryAccount stored = new InMemoryAccount();
+    stored.dto = dto;
+
+    accountsById.put(id, stored);
+    idByPhone.put(request.phoneNumber(), id);
+
+    return dto;
+  }
+
   @Override
   public Optional<AccountDto> findById(UUID id) {
-    // Placeholder implementation; will be backed by Cassandra later.
-    return Optional.of(new AccountDto(id, "+10000000000", true, Instant.EPOCH));
+    InMemoryAccount stored = accountsById.get(id);
+    return stored == null ? Optional.empty() : Optional.of(stored.dto);
   }
 
   @Override
   public Optional<AccountDto> findByPhoneNumber(String e164) {
-    return Optional.of(new AccountDto(UUID.randomUUID(), e164, true, Instant.EPOCH));
+    UUID id = idByPhone.get(e164);
+    return id == null ? Optional.empty() : findById(id);
   }
 
   @Override
   public Optional<AccountDto> updateDiscoverableByPhoneNumber(UUID id, boolean discoverableByPhoneNumber) {
-    // In this stub, just echo back a DTO with the requested flag set.
-    return Optional.of(new AccountDto(id, "+10000000000", discoverableByPhoneNumber, Instant.EPOCH));
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored == null) {
+      return Optional.empty();
+    }
+    stored.dto = new AccountDto(
+        stored.dto.id(),
+        stored.dto.phoneNumber(),
+        discoverableByPhoneNumber,
+        stored.dto.createdAt());
+    return Optional.of(stored.dto);
   }
 
   @Override
   public void setRegistrationLock(UUID id, String registrationLock) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.registrationLock = registrationLock;
+    }
   }
 
   @Override
   public void clearRegistrationLock(UUID id) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.registrationLock = null;
+    }
   }
 
   @Override
   public void setFcmRegistration(UUID id, String fcmRegistrationId) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.fcmRegistrationId = fcmRegistrationId;
+    }
   }
 
   @Override
   public void clearFcmRegistration(UUID id) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.fcmRegistrationId = null;
+    }
   }
 
   @Override
   public void setApnRegistration(UUID id, String apnRegistrationId) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.apnRegistrationId = apnRegistrationId;
+    }
   }
 
   @Override
   public void clearApnRegistration(UUID id) {
-    // Stub: no-op for now.
+    InMemoryAccount stored = accountsById.get(id);
+    if (stored != null) {
+      stored.apnRegistrationId = null;
+    }
   }
 }
 

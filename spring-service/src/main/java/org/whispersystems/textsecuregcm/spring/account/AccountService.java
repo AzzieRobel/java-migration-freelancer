@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public interface AccountService {
 
+  AccountDto createAccount(CreateAccountRequest request);
+
   Optional<AccountDto> findById(UUID id);
 
   Optional<AccountDto> findByPhoneNumber(String e164);

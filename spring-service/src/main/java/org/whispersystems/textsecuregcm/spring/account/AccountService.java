@@ -14,5 +14,13 @@ public interface AccountService {
   void setRegistrationLock(UUID id, String registrationLock);
 
   void clearRegistrationLock(UUID id);
+
+  void setFcmRegistration(UUID id, String fcmRegistrationId);
+
+  void clearFcmRegistration(UUID id);
+
+  void setApnRegistration(UUID id, String apnRegistrationId);
+
+  void clearApnRegistration(UUID id);
 }
 

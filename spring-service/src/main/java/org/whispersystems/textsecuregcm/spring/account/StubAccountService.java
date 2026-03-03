@@ -36,5 +36,25 @@ public class StubAccountService implements AccountService {
   public void clearRegistrationLock(UUID id) {
     // Stub: no-op for now.
   }
+
+  @Override
+  public void setFcmRegistration(UUID id, String fcmRegistrationId) {
+    // Stub: no-op for now.
+  }
+
+  @Override
+  public void clearFcmRegistration(UUID id) {
+    // Stub: no-op for now.
+  }
+
+  @Override
+  public void setApnRegistration(UUID id, String apnRegistrationId) {
+    // Stub: no-op for now.
+  }
+
+  @Override
+  public void clearApnRegistration(UUID id) {
+    // Stub: no-op for now.
+  }
 }
 

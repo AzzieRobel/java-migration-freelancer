@@ -16,14 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
 
   private final MessageService messageService;
+  private final MessageEventPublisher messageEventPublisher;
 
-  public MessageController(MessageService messageService) {
+  public MessageController(MessageService messageService, MessageEventPublisher messageEventPublisher) {
     this.messageService = messageService;
+    this.messageEventPublisher = messageEventPublisher;
   }
 
   @PostMapping
   public ResponseEntity<MessageDto> send(@RequestBody CreateMessageRequest request) {
     MessageDto created = messageService.send(request);
+    messageEventPublisher.messageSent(created);
     return ResponseEntity.ok(created);
   }
 

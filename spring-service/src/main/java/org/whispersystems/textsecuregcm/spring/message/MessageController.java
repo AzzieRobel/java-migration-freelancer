@@ -17,14 +17,27 @@ public class MessageController {
 
   private final MessageService messageService;
   private final MessageEventPublisher messageEventPublisher;
+  private final RedisMessageRateLimiter rateLimiter;
 
-  public MessageController(MessageService messageService, MessageEventPublisher messageEventPublisher) {
+  public MessageController(
+      MessageService messageService,
+      MessageEventPublisher messageEventPublisher,
+      RedisMessageRateLimiter rateLimiter) {
     this.messageService = messageService;
     this.messageEventPublisher = messageEventPublisher;
+    this.rateLimiter = rateLimiter;
   }
 
   @PostMapping
   public ResponseEntity<MessageDto> send(@RequestBody CreateMessageRequest request) {
+    if (request.senderId() == null || request.recipientId() == null) {
+      return ResponseEntity.badRequest().build();
+    }
+
+    if (!rateLimiter.isAllowed(request.senderId())) {
+      return ResponseEntity.status(429).build();
+    }
+
     MessageDto created = messageService.send(request);
     messageEventPublisher.messageSent(created);
     return ResponseEntity.ok(created);

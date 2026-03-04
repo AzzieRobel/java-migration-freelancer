@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package textsecure.messaging.v1;
+
+option java_multiple_files = true;
+option java_package = "org.whispersystems.textsecuregcm.spring.grpc";
+option java_outer_classname = "MessagingProto";
+
+// Basic message model used over gRPC
+message Message {
+  string message_id   = 1;
+  string sender_id    = 2;
+  string recipient_id = 3;
+  int64  timestamp_ms = 4;
+  string body         = 5;
+  string status       = 6;
+}
+
+// Request to send a message
+message SendMessageRequest {
+  string sender_id    = 1;
+  string recipient_id = 2;
+  string body         = 3;
+}
+
+// Response from send
+message SendMessageResponse {
+  Message message = 1;
+}
+
+// Request to list recent messages
+message ListMessagesRequest {
+  string recipient_id = 1;
+  uint32 limit        = 2;
+}
+
+// Response with messages
+message ListMessagesResponse {
+  repeated Message messages = 1;
+}
+
+// Service that Phoenix will call over gRPC
+service MessagingService {
+  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse);
+  rpc ListMessages (ListMessagesRequest) returns (ListMessagesResponse);
+}
+
